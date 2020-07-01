@@ -25,17 +25,17 @@ Ansible Ad-hocコマンドは、プレイブックを作成しなくてもリモ
 実例をみていきましょう。
 
 ```bash
-[all:vars]
+[all:vars]  // 共通の変数
 ansible_user=student1
 ansible_ssh_pass=PASSWORD
 ansible_port=22
 
-[web]
+[web]  // ホスト定義
 node1 ansible_host=<X.X.X.X>
 node2 ansible_host=<Y.Y.Y.Y>
 node3 ansible_host=<Z.Z.Z.Z>
 
-[control]
+[control] // なんだっけ
 ansible ansible_host=44.55.66.77
 ```
 皆さんのAnsible環境はすでに固有のインベントリを利用するよう設定されています。
@@ -65,7 +65,7 @@ ansible ansible_host=44.55.66.77
 [student<X@>ansible ~]$ ansible web  --list-hosts
 [student<X@>ansible ~]$ ansible web,ansible --list-hosts
 [student<X@>ansible ~]$ ansible 'node*' --list-hosts
-[student<X@>ansible ~]$ ansible all --list-hosts
+[student<X@>ansible ~]$ ansible all --list-hosts // allにはインベントリ内の全てのホストが自動で登録される
 ```
 
 また、システムを1つ以上の複数のグループへ所属させることもできます。
@@ -210,6 +210,17 @@ uid=1001(student1) gid=1001(student1) Gruppen=1001(student1) Kontext=unconfined_
 
 ```bash
 [student<X>@ansible ~]$ ansible all -m command -a 'uname -r'
+// 結果
+// CHANGEDの意味はノードに変更を及ぼしているかもしれない(実際には変更されていないが、'uname -r'が変更を及ぼすかansible(コマンドモジュール)が判断できないので)
+// SUCCESSの意味はノードに変更を及ぼさない=冪等性がある
+ansible | CHANGED | rc=0 >>
+4.18.0-193.el8.x86_64
+node1 | CHANGED | rc=0 >>
+4.18.0-193.el8.x86_64
+node3 | CHANGED | rc=0 >>
+4.18.0-193.el8.x86_64
+node2 | CHANGED | rc=0 >>
+4.18.0-193.el8.x86_64
 ```
 
 時には、ホストの実行結果を１行にする方が良い時もあるかと思います。:
